@@ -21,9 +21,9 @@ services:
     image: otel/opentelemetry-collector:latest
     container_name: otel-collector
     volumes:
-      - ./config/otelcollectorconfig.yaml:/etc/config/otelcollectorconfig.yaml # Caminho do arquivo de configuração do OTEL Collector
+      - ./otelcollectorconfig.yaml:/etc/otelcollectorconfig.yaml # Caminho do arquivo de configuração do OTEL Collector
 
-    command: ["--config", "/etc/config/otelcollectorconfig.yaml"]
+    command: ["--config", "/etc/otelcollectorconfig.yaml"]
     ports:
       - "4317:4317"  # gRPC traces
       - "4318:4318"  # HTTP traces/metrics
