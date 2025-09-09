@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   otel-collector:
-    image: otel/opentelemetry-collector:latest
+    image: otel/opentelemetry-collector-contrib:0.133.0
     container_name: otel-collector
     volumes:
       - ./otelcollectorconfig.yaml:/etc/otelcollectorconfig.yaml # Caminho do arquivo de configuração do OTEL Collector
