@@ -3,8 +3,10 @@ global:
 
 scrape_configs:
   - job_name: "prometheus"
+    metrics_path: /metrics
+    scheme: https
     static_configs:
-      - targets: ["https://eoscss40ggo8kwwsc0848kc8.ragde.app"]
+      - targets: ["eoscss40ggo8kwwsc0848kc8.ragde.app"]
 
   # Adicione outros jobs aqui para monitorar seus outros serviços/aplicações.
   # Exemplo para um node-exporter (se você tivesse um):
