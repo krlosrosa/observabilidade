@@ -21,7 +21,8 @@ services:
     image: otel/opentelemetry-collector:latest
     container_name: otel-collector
     volumes:
-      - ./otel/otel-collector-config.yml:/etc/otel-collector-config.yml
+      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+
     command: ["--config=/etc/otel-collector-config.yml"]
     ports:
       - "4317:4317"  # gRPC traces
