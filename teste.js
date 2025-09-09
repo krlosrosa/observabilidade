@@ -1,1 +1,0 @@
-import './otel/otel-collector-config.yml'
