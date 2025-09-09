@@ -1,39 +1,69 @@
+# Habilita a autenticação. Mantenha 'false' para um ambiente interno simples.
 auth_enabled: false
+
+# Define o modo de operação. 'all' significa que este único processo
+# rodará todos os componentes necessários do Loki (ingester, querier, etc.).
+target: all
 
 server:
   http_listen_port: 3100
   log_level: info
 
+# Configuração de como os logs são recebidos e armazenados temporariamente.
 ingester:
   lifecycler:
-    address: 127.0.0.1
+    # 'memberlist' é mais robusto que 'inmemory' para gerenciar o estado do anel,
+    # mesmo com um único nó. É a prática recomendada.
     ring:
       kvstore:
-        store: inmemory
+        store: memberlist
       replication_factor: 1
-  chunk_idle_period: 5m
-  chunk_block_size: 262144
+  # Tempo máximo que um chunk (bloco de logs) pode ficar na memória antes de ser salvo.
   max_chunk_age: 1h
 
+# Define a versão do esquema e o tipo de armazenamento do índice.
 schema_config:
   configs:
-    - from: 2020-10-15
-      store: boltdb-shipper
+    - from: 2024-04-01 # Use uma data recente
+      store: tsdb       # 'tsdb' é o formato de índice mais moderno e eficiente.
       object_store: filesystem
-      schema: v11
+      schema: v13       # 'v13' é a versão de esquema mais recente.
       index:
         prefix: index_
-        period: 168h
+        period: 24h
 
+# Define onde e como os dados (índices e chunks de logs) são armazenados.
 storage_config:
-  boltdb_shipper:
-    active_index_directory: /loki/index
-    cache_location: /loki/cache
-    shared_store: filesystem
+  # TSDB é o armazenamento de índice recomendado para a schema v12+
+  tsdb_shipper:
+    active_index_directory: /loki/tsdb-index
+    cache_location: /loki/tsdb-cache
+  # Armazenamento dos chunks de logs no sistema de arquivos local.
   filesystem:
     directory: /loki/chunks
 
+# Componente que otimiza os arquivos de índice, mesclando-os.
+compactor:
+  working_directory: /loki/compactor
+  shared_store: filesystem
+
+# Componente que permite a criação de regras de alerta e gravação.
+ruler:
+  alertmanager_url: '' # Deixe em branco se não estiver usando o Alertmanager
+  storage:
+    type: local
+    local:
+      directory: /loki/rules
+  ring:
+    kvstore:
+      store: memberlist
+  rule_path: /loki/rules-temp
+
+# Limites de ingestão para proteger o sistema contra sobrecarga.
 limits_config:
   enforce_metric_name: false
   reject_old_samples: true
-  reject_old_samples_max_age: 168h
+  reject_old_samples_max_age: 168h # 7 dias
+  # Limite de ingestão por stream para evitar que uma única fonte sobrecarregue o sistema.
+  ingestion_rate_mb: 4
+  ingestion_burst_size_mb: 8
