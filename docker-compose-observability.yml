@@ -66,9 +66,9 @@ services:
     image: otel/opentelemetry-collector-contrib:latest
     container_name: otel-collector
     restart: unless-stopped
-    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    command: ["--config=/etc/otelcol-contrib/config.yml"]
     volumes:
-      - ./otel-collector/otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
+      - ./otel-collector/otel-collector-config.yml:/etc/otelcol-contrib/config.yml
     ports:
       - "4317:4317"   # OTLP gRPC receiver
       - "4318:4318"   # OTLP HTTP receiver

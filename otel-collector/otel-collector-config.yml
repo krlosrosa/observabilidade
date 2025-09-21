@@ -1,4 +1,3 @@
-# /otel-collector/otel-collector-config.yaml
 # Define o pipeline de telemetria: como receber, processar e para onde enviar os dados.
 
 receivers:

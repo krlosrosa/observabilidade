@@ -1,10 +1,10 @@
-# /promtail/promtail-config.yaml
+# /promtail/promtail-config.yml
 server:
   http_listen_port: 9080
   grpc_listen_port: 0
 
 positions:
-  filename: /tmp/positions.yaml
+  filename: /tmp/positions.yml
 
 clients:
   - url: http://loki:3100/loki/api/v1/push

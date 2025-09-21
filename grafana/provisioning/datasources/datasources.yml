@@ -27,10 +27,10 @@ services:
     container_name: loki
     restart: unless-stopped
     volumes:
-      - ./loki/loki-config.yaml:/etc/loki/local-config.yaml
+      - ./loki/loki-config.yml:/etc/loki/local-config.yml
     ports:
       - "3100:3100"
-    command: -config.file=/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/local-config.yml
     networks:
       - observability-net
 
@@ -40,7 +40,7 @@ services:
     container_name: promtail
     restart: unless-stopped
     volumes:
-      - ./promtail/promtail-config.yaml:/etc/promtail/config.yml
+      - ./promtail/promtail-config.yml:/etc/promtail/config.yml
       - /var/run/docker.sock:/var/run/docker.sock
     command: -config.file=/etc/promtail/config.yml
     networks:
@@ -66,9 +66,9 @@ services:
     image: otel/opentelemetry-collector-contrib:latest
     container_name: otel-collector
     restart: unless-stopped
-    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    command: ["--config=/etc/otelcol-contrib/config.yml"]
     volumes:
-      - ./otel-collector/otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
+      - ./otel-collector/otel-collector-config.yml:/etc/otelcol-contrib/config.yml
     ports:
       - "4317:4317"   # OTLP gRPC receiver
       - "4318:4318"   # OTLP HTTP receiver
