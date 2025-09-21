@@ -1,0 +1,51 @@
+# /otel-collector/otel-collector-config.yaml
+# Define o pipeline de telemetria: como receber, processar e para onde enviar os dados.
+
+receivers:
+  # Habilita o recebimento de dados (métricas, logs, traces) via protocolo OTLP.
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  # Agrupa os dados em lotes antes de exportar, para melhor performance.
+  batch:
+
+exporters:
+  # Exporta métricas para um endpoint que o Prometheus pode coletar.
+  prometheus:
+    endpoint: 0.0.0.0:8889
+    namespace: "app_observability"
+
+  # Exporta traces para o Jaeger.
+  jaeger:
+    endpoint: jaeger:14250 # Endpoint gRPC do Collector do Jaeger
+    tls:
+      insecure: true
+
+  # Exporta logs para o Loki.
+  loki:
+    endpoint: http://loki:3100/loki/api/v1/push
+
+  # (Opcional) Exporta tudo para o console para facilitar o debug.
+  logging:
+    loglevel: debug
+
+service:
+  # Define as pipelines para cada tipo de sinal (trace, métrica, log).
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [jaeger, logging]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [prometheus, logging]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [loki, logging]
