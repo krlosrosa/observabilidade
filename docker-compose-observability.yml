@@ -1,4 +1,4 @@
-# docker-compose.yml para a stack de observabilidade
+# docker-compose.yml para a stack de observabilidade (versão corrigida)
 version: '3.8'
 
 volumes:
@@ -12,7 +12,8 @@ services:
     container_name: prometheus
     restart: unless-stopped
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      # CORREÇÃO: Alterado para .yaml para consistência
+      - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -27,10 +28,11 @@ services:
     container_name: loki
     restart: unless-stopped
     volumes:
-      - ./loki/loki-config.yml:/etc/loki/local-config.yml
+      # CORREÇÃO: Alterado para .yaml
+      - ./loki/loki-config.yaml:/etc/loki/local-config.yaml
     ports:
       - "3100:3100"
-    command: -config.file=/etc/loki/local-config.yml
+    command: -config.file=/etc/loki/local-config.yaml
     networks:
       - observability-net
 
@@ -40,7 +42,8 @@ services:
     container_name: promtail
     restart: unless-stopped
     volumes:
-      - ./promtail/promtail-config.yml:/etc/promtail/config.yml:ro
+      # CORREÇÃO: Alterado para .yaml
+      - ./promtail/promtail-config.yaml:/etc/promtail/config.yml
       - /var/run/docker.sock:/var/run/docker.sock
     command: -config.file=/etc/promtail/config.yml
     networks:
@@ -54,10 +57,10 @@ services:
     environment:
       - COLLECTOR_ZIPKIN_HOST_PORT=:9411
     ports:
-      - "6831:6831/udp" # Agent
-      - "16686:16686"   # UI
-      - "14268:14268"   # Collector HTTP
-      - "14250:14250"   # Collector gRPC (para o OTEL Collector)
+      - "6831:6831/udp"
+      - "16686:16686"
+      - "14268:14268"
+      - "14250:14250"
     networks:
       - observability-net
 
@@ -66,13 +69,14 @@ services:
     image: otel/opentelemetry-collector-contrib:latest
     container_name: otel-collector
     restart: unless-stopped
-    command: ["--config=/etc/otelcol-contrib/config.yml"]
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
     volumes:
-      - ./otel-collector/otel-collector-config.yml:/etc/otelcol-contrib/config.yml
+      # CORREÇÃO: Alterado para .yaml
+      - ./otel-collector/otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
     ports:
-      - "4317:4317"   # OTLP gRPC receiver
-      - "4318:4318"   # OTLP HTTP receiver
-      - "8889:8889"   # Prometheus metrics exporter
+      - "4317:4317"
+      - "4318:4318"
+      - "8889:8889"
     depends_on:
       - loki
       - jaeger
