@@ -7,9 +7,10 @@ services:
     restart: unless-stopped
     networks:
       - proxy
+    command:
+    - --config.file=/etc/prometheus/prometheus.yml
     volumes:
-      - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.prometheus.rule=Host(`${PROMETHEUS_HOST}`)"
